@@ -1,5 +1,7 @@
 import os
 from typing import Optional
+
+from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 
 class DatabaseConfig(BaseModel):
@@ -44,6 +46,17 @@ class JwtConfig(BaseModel):
     secret_key: str = Field(default="your-secret-key-here")
     algorithm: str = Field(default="HS256")
     jwt_expire_minutes: int = Field(default=30, ge=1)
+
+class RabbitMQConfig(BaseModel):
+    """RabbitMQ configuration settings"""
+    host: str = Field(default="rabbitmq")
+    port: int = Field(default=5672, ge=1, le=65535)
+    user: str = Field(default="admin")
+    password: str = Field(default="admin")
+    exchange: str = Field(default="prescription_exchange")
+    queue: str = Field(default="prescription_notifications")
+    routing_key: str = Field(default="prescription.ready")
+
 class Settings(BaseModel):
     """Main settings class"""
     app: AppConfig = AppConfig()
@@ -51,12 +64,15 @@ class Settings(BaseModel):
     redis: RedisConfig = RedisConfig()
     mongo: MongoConfig = MongoConfig()
     jwt: JwtConfig = JwtConfig()
+    rabbitmq: RabbitMQConfig = RabbitMQConfig()
     class Config:
         env_file = ".env"
         env_nested_delimiter = "__"
 
 # Load settings from environment
 def get_settings() -> Settings:
+    load_dotenv("./.env")
+
     """
     Get application settings with environment variable overrides
 
@@ -101,7 +117,16 @@ def get_settings() -> Settings:
         jwt = JwtConfig(
             secret_key=os.getenv("JWT__SECRET_KEY", "your-secret-key-here"),
             algorithm=os.getenv("JWT__ALGORITHM", "HS256"),
-            jwt_expire_minutes=int(os.getenv("JWT__ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+            jwt_expire_minutes=int(os.getenv("JWT__ACCESS_TOKEN_EXPIRE_MINUTES", "30")),
+        ),
+        rabbitmq=RabbitMQConfig(
+            host=os.getenv("RABBITMQ__HOST", "rabbitmq"),
+            port=int(os.getenv("RABBITMQ__PORT", "5672")),
+            user=os.getenv("RABBITMQ__USER", "admin"),
+            password=os.getenv("RABBITMQ__PASSWORD", "admin"),
+            exchange=os.getenv("RABBITMQ__EXCHANGE", "prescription_exchange"),
+            queue=os.getenv("RABBITMQ__QUEUE", "prescription_notifications"),
+            routing_key=os.getenv("RABBITMQ__ROUTING_KEY", "prescription.ready"),
         )
     )
 
