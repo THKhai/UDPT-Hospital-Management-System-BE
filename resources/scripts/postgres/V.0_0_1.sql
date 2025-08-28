@@ -50,16 +50,17 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 CREATE TABLE IF NOT EXISTS appointment_mgmt.appointments (
 id SERIAL PRIMARY KEY,
 
--- Thông tin liên kết
+
 patient_id INTEGER NOT NULL REFERENCES appointment_mgmt.patients(id),
 doctor_id INTEGER NOT NULL REFERENCES appointment_mgmt.doctors(id),
 department_id INTEGER NOT NULL REFERENCES appointment_mgmt.departments(id),
 slot_id INTEGER NOT NULL REFERENCES appointment_mgmt.doctor_available_slots(id),
 
--- Thông tin lịch khám
+
 appointment_date DATE NOT NULL,
 appointment_time TIME NOT NULL,
 reason TEXT NOT NULL, -- Lý do khám (use case: bệnh nhân nhập lý do)
+is_emergency BOOLEAN DEFAULT FALSE NOT NULL, -- Emergency appointment flag
 
 -- Trạng thái và xử lý
 status appointment_mgmt.appointment_status DEFAULT 'PENDING',
@@ -114,6 +115,8 @@ CREATE INDEX idx_appointments_patient ON appointment_mgmt.appointments(patient_i
 CREATE INDEX idx_appointments_doctor ON appointment_mgmt.appointments(doctor_id);
 CREATE INDEX idx_appointments_status ON appointment_mgmt.appointments(status);
 CREATE INDEX idx_appointments_date ON appointment_mgmt.appointments(appointment_date);
+CREATE INDEX idx_appointments_emergency ON appointment_mgmt.appointments(is_emergency, status);
+CREATE INDEX idx_appointments_emergency_date ON appointment_mgmt.appointments(is_emergency, appointment_date);
 
 -- Use case: Lấy lịch chờ xác nhận
 CREATE INDEX idx_appointments_pending ON appointment_mgmt.appointments(doctor_id, status)
@@ -187,6 +190,7 @@ dept.name as department_name,
 a.appointment_date,
 a.appointment_time,
 a.reason,
+a.is_emergency,
 a.status,
 a.created_at
 FROM appointment_mgmt.appointments a
@@ -206,12 +210,14 @@ dept.name as department_name,
 a.appointment_date,
 a.appointment_time,
 a.reason,
+a.is_emergency,
 a.created_at
 FROM appointment_mgmt.appointments a
 JOIN appointment_mgmt.patients p ON a.patient_id = p.id
 JOIN appointment_mgmt.doctors d ON a.doctor_id = d.id
 JOIN appointment_mgmt.departments dept ON a.department_id = dept.id
-WHERE a.status = 'PENDING';
+WHERE a.status = 'PENDING'
+ORDER BY a.is_emergency DESC, a.created_at ASC;
 
 -- View: Lịch trống của bác sĩ (Use case: Đặt lịch khám)
 CREATE OR REPLACE VIEW appointment_mgmt.v_available_slots AS
