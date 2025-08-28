@@ -39,14 +39,18 @@ class AppConfig(BaseModel):
     secret_key: str = Field(default="your-secret-key-here")
     algorithm: str = Field(default="HS256")
     access_token_expire_minutes: int = Field(default=30, ge=1)
-
+class JwtConfig(BaseModel):
+    """JWT configuration settings"""
+    secret_key: str = Field(default="your-secret-key-here")
+    algorithm: str = Field(default="HS256")
+    jwt_expire_minutes: int = Field(default=30, ge=1)
 class Settings(BaseModel):
     """Main settings class"""
     app: AppConfig = AppConfig()
     database: DatabaseConfig = DatabaseConfig()
     redis: RedisConfig = RedisConfig()
     mongo: MongoConfig = MongoConfig()
-
+    jwt: JwtConfig = JwtConfig()
     class Config:
         env_file = ".env"
         env_nested_delimiter = "__"
@@ -93,6 +97,11 @@ def get_settings() -> Settings:
             database=os.getenv("MONGO__DATABASE", "hospital-management"),
             username=os.getenv("MONGO__USERNAME"),
             password=os.getenv("MONGO__PASSWORD"),
+        ),
+        jwt = JwtConfig(
+            secret_key=os.getenv("JWT__SECRET_KEY", "your-secret-key-here"),
+            algorithm=os.getenv("JWT__ALGORITHM", "HS256"),
+            jwt_expire_minutes=int(os.getenv("JWT__ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
         )
     )
 

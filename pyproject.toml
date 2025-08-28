@@ -19,7 +19,10 @@ dependencies = [
     "uvicorn (>=0.35.0,<0.36.0)",
     "email-validator (>=2.2.0,<3.0.0)",
     "python-dotenv (>=1.1.1,<2.0.0)",
-    "psycopg2 (>=2.9.10,<3.0.0)"
+    "psycopg2 (>=2.9.10,<3.0.0)",
+    "dependency-injector (>=4.48.1,<5.0.0)",
+    "python-multipart (>=0.0.20,<0.0.21)",
+    "passlib (>=1.7.4,<2.0.0)"
 ]
 
 [tool.poetry]

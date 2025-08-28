@@ -1,10 +1,12 @@
 from contextlib import asynccontextmanager
-
+from dependency_injector import containers, providers
+from src.core.container import Container
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.controllers.user_controller import router as user_router
 from config.settings import settings
 from config.database import test_db_connection, init_db
+from src.controllers .login_controller import login_router
 from config.database_utils import (
     get_database_info,
     diagnose_database_issues
@@ -46,6 +48,11 @@ async def lifespan(app: FastAPI):
     # Shutdown logic
     logger.info("Shutting down application")
 
+
+container = Container()
+container.wire(modules=[
+    "src.controllers.login_controller"
+])
 app = FastAPI(
     title=settings.app.title,
     description=settings.app.description,
@@ -53,6 +60,12 @@ app = FastAPI(
     debug=settings.app.debug,
     lifespan=lifespan
 )
+# Add this configuration
+app.swagger_ui_init_oauth = {
+    "usePkceWithAuthorizationCodeGrant": True,
+    "clientId": "",
+    "clientSecret": ""
+}
 
 # Add CORS middleware
 app.add_middleware(
@@ -65,6 +78,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(user_router)
+app.include_router(login_router)
 @app.get("/")
 async def root():
     return {
