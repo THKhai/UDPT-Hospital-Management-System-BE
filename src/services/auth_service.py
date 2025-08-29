@@ -32,13 +32,9 @@ class AuthService:
             print(f"Error fetching user in Auth service: {e}")
             return None
         return user
-    async def create_user(self, user: UserCreateDTO):
-        new_user = Auth(
-            username=user.username,
-            password=hash_password(user.password),
-            role=user.role
-        )
-        return self.auth_repository.create_user(new_user)
+    async def create_user(self, user: Auth):
+
+        return self.auth_repository.create_user(user)
     async def authenticate_user(self, user_name: str, password: str):
         """Xác thực người dùng với tên đăng nhập và mật khẩu"""
         try:
@@ -90,6 +86,8 @@ class AuthService:
             )
         access_token_expires = timedelta(minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(
-            data={"sub": user.username}, expires_delta=access_token_expires
+            data={"sub": user.username,
+                  "role": user.role,
+                  }, expires_delta=access_token_expires
         )
         return TokenResponseDTO(access_token=access_token, token_type="bearer")

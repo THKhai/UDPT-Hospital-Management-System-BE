@@ -1,16 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from typing import Annotated
-
 from sqlalchemy.orm import Session
-
 from config import get_db
 from src.dto.auth_dto import UserLoginDTO, UserCreateDTO,TokenResponseDTO
 from src.services.auth_service import AuthService
 from dependency_injector.wiring import inject,Provide
 from src.core.container import Container
 from src.services.user_service import UserService
-
+from src.models.auth import Auth
 login_router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
@@ -38,9 +36,15 @@ async def register(
 
         # Create user profile (username, email, password) in user table first
         created_user = user_service.create_user(user_data)
+        data_auth = Auth(
+            username=user_data.username,
+            password=user_data.password,  # hoặc dùng hàm hash bạn đang sử dụng
+            role=user_data.role,
+            user_ref_id=created_user.id  # gán mỗi id của user vừa tạo
+        )
 
         # Then create credentials in auth table
-        new_user = await auth_service.create_user(user_data)
+        new_user = await auth_service.create_user(data_auth)
 
     except HTTPException:
         # Re-raise HTTP exceptions as-is
