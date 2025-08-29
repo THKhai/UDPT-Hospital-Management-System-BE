@@ -1,11 +1,7 @@
 from datetime import timedelta, datetime, timezone
-import jwt
+from jose import jwt
 from passlib.context import CryptContext
 from config.settings import settings
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from typing import Annotated
-from jwt import InvalidTokenError
 
 SECRET_KEY = settings.jwt.secret_key
 ALGORITHM = settings.jwt.algorithm

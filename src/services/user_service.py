@@ -74,14 +74,11 @@ class UserService:
                     detail="Email already exists"
                 )
 
-        # Hash password
-        hashed_password = self._hash_password(user_data.password)
-
         # Tạo user object
         user = User(
             username=user_data.username,
             email=str(user_data.email) if user_data.email else None,
-            password=hashed_password
+            password=user_data.password
         )
 
         # Lưu vào database

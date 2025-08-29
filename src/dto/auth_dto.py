@@ -12,6 +12,8 @@ class UserRole(str, Enum):
 class UserCreateDTO(BaseModel):
     username: str
     password: str
+    name: str
+    email: EmailStr
     role: UserRole = UserRole.EMPLOYEE
 
     class Config:

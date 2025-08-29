@@ -1,3 +1,5 @@
+from typing import Optional
+
 from src.models.auth import Auth
 class AuthRepository:
     def __init__(self, db):

@@ -1,13 +1,14 @@
 from datetime import timedelta
 from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer
+from passlib.exc import InvalidTokenError
+
 from src.auth.security import create_access_token
 from fastapi import HTTPException, Depends
 from starlette import status
 from src.models.auth import Auth
 from src.repositories.auth_repository import AuthRepository
 from config.settings import settings
-from jwt.exceptions import InvalidTokenError
 from src.dto.auth_dto import TokenResponseDTO,UserCreateDTO,UserRole
 from src.auth.security import hash_password
 import jwt
