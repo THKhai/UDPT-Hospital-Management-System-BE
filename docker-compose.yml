@@ -71,4 +71,21 @@ services:
     networks:
       - default
 
+  fastapi:
+    build: .
+    container_name: microservice_user_management
+    ports:
+      - "${APP__PORT:-8000}:8000"
+    depends_on:
+      - postgres
+      - redis
+      - mongo
+      - rabbitmq
+    environment:
+      DATABASE__URL: postgresql://postgres:postgres@postgres:5432/postgres
+      REDIS__HOST: redis
+      MONGO__HOST: mongo
+    env_file:
+      - .env
+
 

@@ -122,6 +122,13 @@ if !postgres_error! equ 0 (
     call :echoSuccess "Postgres has been initialized successfully with SQL scripts!"
 )
 
+call :echoStep "Restarting FastAPI container..."
+docker-compose restart fastapi
+if !errorlevel! neq 0 (
+    call :echoErr "Error restarting FastAPI container. Exiting script."
+    exit /b !errorlevel!
+)
+
 call :echoSuccess "All services have been initialized successfully!"
 
 REM --- Color echo functions ---
