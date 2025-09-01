@@ -5,6 +5,8 @@ setlocal enabledelayedexpansion
 cd .
 
 call :echoStep "Starting Docker containers..."
+docker network rm shared-project-network
+docker network create shared-project-network
 docker-compose up -d
 if !errorlevel! neq 0 (
     call :echoErr "Error starting Docker containers. Exiting script."
