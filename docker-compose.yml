@@ -23,7 +23,7 @@ services:
       retries: 3
       start_period: 10s
     networks:
-      - shared-project-network
+      - private-hospital-network
 
   redis:
     image: redis:latest
@@ -44,7 +44,7 @@ services:
       retries: 3
       start_period: 10s
     networks:
-      - shared-project-network
+      - private-hospital-network
 
   mongo:
     image: mongo:latest
@@ -65,7 +65,7 @@ services:
       retries: 3
       start_period: 10s
     networks:
-      - shared-project-network
+      - private-hospital-network
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -77,7 +77,7 @@ services:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
     networks:
-      - shared-project-network
+      - private-hospital-network
 
   fastapi:
     build: .
@@ -97,8 +97,8 @@ services:
     env_file:
       - .env
     networks:
-      - shared-project-network
+      - private-hospital-network
 
 networks:
-  shared-project-network:
+  private-hospital-network:
     external: true

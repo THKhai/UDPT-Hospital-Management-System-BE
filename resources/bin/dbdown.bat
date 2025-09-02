@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 call :echoStep "Stopping and removing containers..."
 docker-compose down
-docker network rm shared-project-network
+docker network rm private-hospital-network
 call :echoStep "Clean up data from containers..."
 IF EXIST "resources\logs" (
     for /d %%D in ("resources\logs\*") do rd /s /q "%%D"
