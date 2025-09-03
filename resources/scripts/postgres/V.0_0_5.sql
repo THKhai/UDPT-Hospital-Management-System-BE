@@ -21,18 +21,18 @@ updated_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 CREATE TABLE IF NOT EXISTS medication.prescription (
 prescription_id       SERIAL PRIMARY KEY,
 prescription_code                  TEXT UNIQUE,                -- mã đơn (nếu cần tra cứu nhanh)
-appointment_id INTEGER NOT NULL REFERENCES appointment_mgmt.appointments(id),
+appointment_id INTEGER NOT NULL,
 status TEXT NOT NULL DEFAULT 'CREATED'
 CHECK (status IN ('CREATED','UPDATED','CANCELED','PARTIALLY_DISPENSED','DISPENSED')),
 valid_from            TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL ,
 valid_to              TIMESTAMP,                       -- hạn dùng đơn
 notes                 TEXT,
 created_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-created_by            INTEGER REFERENCES appointment_mgmt.doctors(id),                       -- user ID hệ thống
+created_by            INTEGER,                       -- user ID hệ thống
 updated_at            TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-updated_by            INTEGER REFERENCES appointment_mgmt.doctors(id),
+updated_by            INTEGER,
 canceled_at           TIMESTAMP,
-canceled_by           INTEGER REFERENCES appointment_mgmt.doctors(id),
+canceled_by           INTEGER,
 canceled_reason       TEXT,
 CONSTRAINT prescription_valid_range_chk
 CHECK (valid_to IS NULL OR valid_to >= valid_from)
@@ -59,7 +59,7 @@ prescription_id       INTEGER NOT NULL REFERENCES medication.prescription(prescr
 status TEXT NOT NULL DEFAULT 'PENDING'
 CHECK (status IN ('PENDING','COMPLETED')),
 dispensed_at          TIMESTAMP,               -- thời điểm hoàn tất (COMPLETED)
-dispensed_by          INTEGER REFERENCES appointment_mgmt.doctors(id),                      -- user dược sĩ
+dispensed_by          INTEGER,                      -- user dược sĩ
 notes                 TEXT
 );
 
