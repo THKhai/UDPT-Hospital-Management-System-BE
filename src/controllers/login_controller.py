@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from typing import Annotated
@@ -8,7 +10,9 @@ from src.services.auth_service import AuthService
 from dependency_injector.wiring import inject,Provide
 from src.core.container import Container
 from src.services.user_service import UserService
+from src.services.patient_service import PatientService
 from src.models.auth import Auth
+from src.models.patient import Patient
 login_router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
@@ -16,7 +20,8 @@ login_router = APIRouter(
 def get_user_service(db: Session = Depends(get_db)) -> UserService:
     """Dependency để get UserService instance"""
     return UserService(db)
-
+def get_patient_service(db: Session = Depends(get_db)) -> PatientService:
+    return PatientService(db)
 @login_router.post("/register",
                 status_code=status.HTTP_201_CREATED,
                 summary="Register new user",
@@ -26,7 +31,8 @@ def get_user_service(db: Session = Depends(get_db)) -> UserService:
 async def register(
         user_data: UserCreateDTO,
         auth_service: AuthService = Depends(Provide[Container.auth_service]),
-        user_service: UserService = Depends(get_user_service)
+        user_service: UserService = Depends(get_user_service),
+        patient_service: PatientService = Depends(get_patient_service)
 ):
     try:
         # Check if username already exists in auth
@@ -46,6 +52,14 @@ async def register(
         # Then create credentials in auth table
         new_user = await auth_service.create_user(data_auth)
 
+        patient_data = Patient(
+            name=user_data.name,
+            phone=user_data.phone,
+            email=str(user_data.email),
+            user_id=new_user.id,
+            updated_at=str(datetime.now())
+        )
+        patient_user = patient_service.create_patient(patient_data)
     except HTTPException:
         # Re-raise HTTP exceptions as-is
         raise

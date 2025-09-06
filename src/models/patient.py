@@ -3,11 +3,11 @@ from config import Base
 
 
 class Patient(Base):
-    __tablename__ = "patient"
-    __table_args__ = {"schema": "users"}
+    __tablename__ = "patients"
+    __table_args__ = {"schema": "appointment_mgmt"}
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(50), unique=True, nullable=False, index=True)
-    age = Column(Integer, nullable=False)
-    gender = Column(String(10), nullable=False)
-    phone = Column(String(15), nullable=False)
-    address = Column(String(255), nullable=False)
+    name = Column(String(100), unique=True, nullable=False, index=True)
+    phone = Column(String(20), nullable=False)
+    email = Column(String(100), nullable=False)
+    user_id = Column(Integer, nullable=False)
+    updated_at = Column(String(50), nullable=False)

@@ -137,3 +137,18 @@ async def delete_user(
             message=f"Failed to delete user with id {user_id}",
             status="error"
         )
+@router.get(
+    "/by-username/{username}",
+    response_model=UserDetailResponseDTO,
+    status_code=status.HTTP_200_OK,
+    summary="Get user by username",
+    description="Retrieve detailed information of a user by username"
+)
+async def get_user_by_username(
+        username: str = Path(..., min_length=3, max_length=50, description="Username to look up"),
+        service: UserService = Depends(get_user_service)
+):
+    """
+    Lấy thông tin chi tiết người dùng theo username
+    """
+    return service.get_user_by_username(username)

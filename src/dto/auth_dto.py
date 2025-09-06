@@ -14,6 +14,7 @@ class UserCreateDTO(BaseModel):
     password: str
     name: str
     email: EmailStr
+    phone:str
     role: UserRole = UserRole.EMPLOYEE
 
     class Config:
