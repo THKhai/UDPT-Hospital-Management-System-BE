@@ -21,3 +21,6 @@ class PatientRepository:
     def get_patient_list(self):
         """get patient list"""
         return self.db.query(Patient).all()
+    def get_patient_by_user_id(self, user_id):
+        """get patient by the user id"""
+        return self.db.query(Patient).filter(Patient.user_id == user_id).all()

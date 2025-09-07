@@ -15,3 +15,6 @@ class PatientService:
     def get_patient_list(self):
         """get patient list"""
         return self.patients.get_patient_list()
+    def get_patient_by_user_id(self, user_id):
+        """get patient by the user id"""
+        return self.patients.get_patient_by_user_id(user_id)

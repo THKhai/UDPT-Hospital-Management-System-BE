@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from dependency_injector import containers, providers
+from src.controllers.patient_controller import patient_router
 from src.core.container import Container
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -79,6 +79,7 @@ app.add_middleware(
 # Include routers
 app.include_router(user_router)
 app.include_router(login_router)
+app.include_router(patient_router)
 @app.get("/")
 async def root():
     return {
