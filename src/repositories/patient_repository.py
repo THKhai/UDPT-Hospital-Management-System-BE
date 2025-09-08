@@ -24,3 +24,6 @@ class PatientRepository:
     def get_patient_by_user_id(self, user_id):
         """get patient by the user id"""
         return self.db.query(Patient).filter(Patient.user_id == user_id).all()
+    def get_email_by_id(self, patient_id):
+        """get email by the id"""
+        return self.db.query(Patient.email).filter(Patient.id == patient_id).first()

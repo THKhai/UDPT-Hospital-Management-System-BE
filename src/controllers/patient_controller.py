@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from starlette import status
 from config import get_db
 from src.dto.patient_dto import PatientUpdateDTO
+from src.services.doctor_service import DoctorService
 from src.services.patient_service import PatientService
 patient_router = APIRouter(
     prefix="/patients",
@@ -16,6 +17,8 @@ def get_user_service(db:Session = Depends(get_db)) -> UserService:
     return UserService(db)
 def get_patient_service(db: Session = Depends(get_db)) -> PatientService :
     return PatientService(db)
+def get_doctor_service(db: Session = Depends(get_db)) -> DoctorService:
+    return DoctorService(db)
 @patient_router.get("/patient_profile",
                     status_code=status.HTTP_200_OK,
                     summary="Get patient profile",
@@ -31,7 +34,6 @@ def get_patient_profile(username: str,
     :param username:
     :return:
     """
-    pass
     user = user_service.get_user_by_username(username)
     if not user:
         return {"message": "User not found"}
@@ -80,3 +82,33 @@ def update_patient_profile(
             "updated_at": updated.updated_at,
         },
     }
+@patient_router.get('/get_email',
+            status_code=status.HTTP_200_OK,
+            summary="Get user by email",
+            description="Retrieve detailed information of a user by email"
+            )
+def get_email_by_id(
+        patient_id:int,
+        patient_service: PatientService = Depends(get_patient_service)
+):
+    return patient_service.get_patient_email(patient_id=patient_id)
+
+@patient_router.get("/doctor_profile",
+                   status_code=status.HTTP_200_OK,
+                   summary="Get doctor profile",
+                   description="Retrieve doctor profile")
+def get_doctor_profile(username: str,
+                       doctor_service: DoctorService = Depends(get_doctor_service),
+                       user_service: UserService = Depends(get_user_service)
+                       ):
+    """
+        Lấy thông tin bác sĩ
+    :param user_service:
+    :param doctor_service:
+    :param username:
+    :return:
+    """
+    user = user_service.get_user_by_username(username)
+    if not user:
+        return {"message": "User not found"}
+    return doctor_service.get_doctor_by_user_id(user.id)
